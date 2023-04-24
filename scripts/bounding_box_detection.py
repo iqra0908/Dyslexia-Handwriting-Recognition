@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
-from tensorflow.keras.models import load_model
+from sklearn.svm import SVC
+from tensorflow.keras.models import Model
 from scripts.bounding_box import BoundingBox
 import scripts.utils as utils
 
@@ -13,9 +14,8 @@ the function crops the template letter from the input image, preprocesses it, an
 sliding window detection on the input image using the trained model. 
 It then performs non-maximum suppression to remove overlapping detections and displays the 
 final results in a separate window.'''
-
-def object_detection(image, template_letters):
-    model = load_model('./models/resnet50_model.h5')
+def object_detection(image, template_letters, model):
+    
     all_detected_characters = []
 
     for template_letter in template_letters:
@@ -40,6 +40,7 @@ def object_detection(image, template_letters):
 
     # Return the output image and all detected characters
     return output_image, all_detected_characters
+
 
 if __name__ == "__main__":
     image_path = './data/11_year_old_boy_first_week_at_oak_hill.png'

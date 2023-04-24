@@ -2,7 +2,7 @@ import numpy as np
 import cv2
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
-from tensorflow.keras.applications import ResNet50, EfficientNetB0
+from tensorflow.keras.applications import ResNet50, EfficientNetB0, ResNet101, ResNet152
 from tensorflow.keras.layers import Dense, Dropout, GlobalAveragePooling2D
 from tensorflow.keras.models import Model, Sequential
 from tensorflow.keras.optimizers import Adam
@@ -46,6 +46,7 @@ def load_images_labels(zip_file, subfolders, num_samples=10):
                         break
 
     print(np.unique(labels))
+    print(count)
     return np.array(images), np.array(labels)
 
 # This class provides a static method to create a classification model based on a given base model type.
@@ -56,10 +57,16 @@ class ClassifierModel:
     def create_classification_model(input_shape, num_classes, base_model_type='ResNet50'):
         if base_model_type == 'ResNet50':
             base_model = ResNet50(weights='imagenet', include_top=False, input_shape=input_shape)
+        elif base_model_type == 'ResNet101':
+            base_model = ResNet101(weights='imagenet', include_top=False, input_shape=input_shape)
+        elif base_model_type == 'ResNet152':
+            base_model = ResNet152(weights='imagenet', include_top=False, input_shape=input_shape)
         elif base_model_type == 'EfficientNetB0':
             base_model = EfficientNetB0(weights='imagenet', include_top=False, input_shape=input_shape)
         else:
-            raise ValueError('Invalid base_model_type. Choose from ["ResNet50", "EfficientNetB0"].')
+            raise ValueError('Invalid base_model_type. Choose from ["ResNet50", "ResNet101", "ResNet152", "EfficientNetB0"].')
+        
+        ...
 
         for layer in base_model.layers:
             layer.trainable = False
@@ -80,7 +87,7 @@ def main():
     zip_file = 'Gambo.zip'
     train_subfolders = ['Train/Normal', 'Train/Reversal']
     test_subfolders = ['Test/Normal', 'Test/Reversal']
-    train_images, train_labels = load_images_labels(zip_file, train_subfolders, num_samples=500)
+    train_images, train_labels = load_images_labels(zip_file, train_subfolders, num_samples=1000)
     test_images, test_labels = load_images_labels(zip_file, test_subfolders, num_samples=100)
 
     train_images, val_images, train_labels, val_labels = train_test_split(train_images, train_labels, test_size=0.2, random_state=42)
@@ -95,17 +102,38 @@ def main():
 
     input_shape = (128, 128, 3)
 
-    data_gen = ImageDataGenerator(rotation_range=15, width_shift_range=0.1, height_shift_range=0.1, zoom_range=0.1, horizontal_flip=True, vertical_flip=True)
+    '''data_gen = ImageDataGenerator(
+        rotation_range=15,
+        width_shift_range=0.1,
+        height_shift_range=0.1,
+        zoom_range=0.1,
+        #brightness_range=(0.8, 1.2),  # Add brightness_range
+        #shear_range=0.1,  # Add shear_range
+        horizontal_flip=True,
+        vertical_flip=True,
+        rescale=None,
+        preprocessing_function=None,
+        data_format=None,
+        validation_split=0.0,
+        dtype=None,
+    )'''
+    data_gen = ImageDataGenerator(rotation_range=15, 
+        width_shift_range=0.1, 
+        height_shift_range=0.1, 
+        zoom_range=0.1, 
+        horizontal_flip=True, 
+        vertical_flip=True)
+
 
     train_data_gen = data_gen.flow(train_images, train_labels)
     val_data_gen = data_gen.flow(val_images, val_labels)
 
-    classification_model = ClassifierModel.create_classification_model(input_shape, num_classes)
+    classification_model = ClassifierModel.create_classification_model(input_shape, num_classes, base_model_type='ResNet152')
     classification_model.compile(optimizer=Adam(lr=0.001), loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 
     callbacks = [EarlyStopping(monitor='val_loss', patience=15, restore_best_weights=True)]
 
-    history = classification_model.fit(train_data_gen, epochs=100, validation_data=val_data_gen, callbacks=callbacks)
+    history = classification_model.fit(train_data_gen, epochs=30, validation_data=val_data_gen, callbacks=callbacks)
 
     val_loss, val_acc = classification_model.evaluate(val_data_gen)
     print(f"Validation loss: {val_loss}, Validation accuracy: {val_acc}")
@@ -113,7 +141,7 @@ def main():
     test_loss, test_acc = classification_model.evaluate(test_images, test_labels)
     print(f"Test loss: {test_loss}, Test accuracy: {test_acc}")
 
-    classification_model.save('./models/resnet50_model.h5')
+    classification_model.save('./models/ResNet152_model.h5')
 
 
 if __name__ == '__main__':

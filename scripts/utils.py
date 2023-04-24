@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import tensorflow as tf
 from scripts.bounding_box import BoundingBox
+from sklearn.svm import SVC
 import string
 
 def load_image(image_path):
@@ -53,7 +54,12 @@ def sliding_window(image, window_size, step_size, model):
             patch = image[y:y+window_size, x:x+window_size]
             resized_patch = cv2.resize(patch, (128, 128), interpolation=cv2.INTER_AREA).astype('float32')
             resized_patch = resized_patch / 255.0
-            prediction = model.predict(resized_patch[np.newaxis, ...])[0]
+            if isinstance(model, SVC):  # If the model is an SVM model
+                flattened_patch = resized_patch.reshape(1, -1)
+                prediction = model.predict(flattened_patch)[0]
+            else:
+                prediction = model.predict(resized_patch[np.newaxis, ...])[0]
+                
             predicted_class = np.argmax(prediction)
 
             if predicted_class != 0 and prediction[predicted_class] > 0.1:

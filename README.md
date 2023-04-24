@@ -73,6 +73,8 @@ To reduce the computational requirements for training the model, we used data sa
 | Model | Number of Epochs | Loss (Validation) | Accuracy (Validation) | Loss (Test) | Accuracy (Test) |
 |-------|-----------------|-------------------|-----------------------|-------------|-----------------|
 | ResNet50 | 100 | 2.5033 | 0.2851 | 2.4646 | 0.2912 |
+| ResNet101 | 30 | 2.1344 | 0.3318 | 2.15 | 0.3056 |
+| ResNet152 | 30 | 2.27 | 0.306 | 2.265 | 0.296 |
 
 
 ## References

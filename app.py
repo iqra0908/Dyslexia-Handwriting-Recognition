@@ -4,11 +4,28 @@ import numpy as np
 from PIL import Image
 from streamlit_drawable_canvas import st_canvas
 from scripts.bounding_box_detection import object_detection
+import pickle
+from tensorflow.keras.models import load_model
 
-# Function to perform handwriting recognition on an image
-def recognize_handwriting(image):
+resnet50_model = load_model('./models/resnet50_model.h5')
+resnet101_model = load_model('./models/resnet101_model.h5')
+
+# Load the saved SVM model
+with open('./models/svm_model.pkl', 'rb') as file:
+    svm_model = pickle.load(file)
+
+# Function to perform handwriting recognition on an image using ResNet50
+def recognize_handwriting_resnet50(image):
+    return resnet50_model.predict(image)
+
+# Function to perform handwriting recognition on an image using ResNet101
+def recognize_handwriting_resnet101(image):
+    return resnet101_model.predict(image)
+
+# Function to perform handwriting recognition on an image using SVM
+def recognize_handwriting_svm(image):
     #recognized_image = manual_detection(image)
-    return image
+    return svm_model.predict(image)
 
 # Set the title and the sidebar header of the Streamlit app
 st.set_page_config(page_title="Dyslexia Handwriting Recognition", page_icon=":pencil2:")
@@ -55,8 +72,8 @@ if image_file is not None:
         key="canvas",
     )
 
-# Check if bounding boxes have been drawn
-    if canvas_result.json_data["objects"]:
+    # Check if bounding boxes have been drawn
+    if canvas_result.json_data and canvas_result.json_data["objects"]:
         # Clear the bounding_boxes list
         bounding_boxes = []
 
@@ -69,17 +86,54 @@ if image_file is not None:
 
             # Add the bounding box to the list
             bounding_boxes.append((x, y, w, h))
-        
-    start_detection = st.button("Start Detection")
 
+    # Add buttons for different detection methods
+    st.write("Choose a detection method:")
+    resnet50_button = st.button("ResNet50")
+    resnet101_button = st.button("ResNet101")
+    svm_button = st.button("SVM")
 
-    # If there are bounding boxes, perform handwriting recognition and display the results
-    if start_detection:
+    # If a detection method button has been clicked, perform handwriting recognition and display the results
+    if resnet50_button:
         # Crop the regions within the bounding boxes
         template_letters = [image_cv2[y:y+h, x:x+w] for x, y, w, h in bounding_boxes]
 
-        # Perform handwriting recognition on the cropped regions
-        recognized_image, detected_characters = object_detection(image_cv2, template_letters)
+        # Perform handwriting recognition on the cropped regions using ResNet50
+        recognized_image, detected_characters = object_detection(image_cv2, template_letters, resnet50_model)
+
+        # Display the uploaded image and the recognized image
+        col1, col2 = st.columns(2)
+        with col1:
+            st.image(image, caption='Uploaded image', use_column_width=True)
+        with col2:
+            st.image(recognized_image, caption='Recognized image', use_column_width=True)
+
+        # Display the detected text
+        st.write("Detected text: ", "".join(detected_characters))
+
+    elif resnet101_button:
+        # Crop the regions within the bounding boxes
+        template_letters = [image_cv2[y:y+h, x:x+w] for x, y, w, h in bounding_boxes]
+
+        # Perform handwriting recognition on the cropped regions using ResNet101
+        recognized_image, detected_characters = object_detection(image_cv2, template_letters, resnet101_model)
+
+        # Display the uploaded image and the recognized image
+        col1, col2 = st.columns(2)
+        with col1:
+            st.image(image, caption='Uploaded image', use_column_width=True)
+        with col2:
+            st.image(recognized_image, caption='Recognized image', use_column_width=True)
+
+        # Display the detected text
+        st.write("Detected text: ", "".join(detected_characters))
+
+    elif svm_button:
+        # Crop the regions within the bounding boxes
+        template_letters = [image_cv2[y:y+h, x:x+w] for x, y, w, h in bounding_boxes]
+
+        # Perform handwriting recognition on the cropped regions using SVM
+        recognized_image, detected_characters = object_detection(image_cv2, template_letters, svm_model)
 
         # Display the uploaded image and the recognized image
         col1, col2 = st.columns(2)
