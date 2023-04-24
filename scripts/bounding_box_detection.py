@@ -26,15 +26,15 @@ def object_detection(image, template_letters):
         detections = utils.sliding_window(image, window_size, step_size, model)
 
         if len(detections) > 0:
-            boxes, scores = zip(*[(det[:4], det[-1]) for det in detections])
-            nms_boxes, nms_scores = utils.non_max_suppression(np.array(boxes), np.array(scores), threshold=0.5)
+            boxes, classes, scores = zip(*[(det[:4], det[4], det[-1]) for det in detections])
+            nms_boxes, nms_classes, nms_scores = utils.non_max_suppression(np.array(boxes), np.array(classes), np.array(scores), threshold=0.5)
         else:
-            nms_boxes, nms_scores = [], []
+            nms_boxes, nms_classes, nms_scores = [], [], []
 
-        output_image = utils.display_detections(image, nms_boxes, nms_scores, utils.get_characters())
+        output_image = utils.display_detections(image, nms_boxes, nms_classes, nms_scores, utils.get_characters())
         # Get the detected characters
-        detected_characters = utils.get_letters(nms_boxes, nms_scores, utils.get_characters())
-
+        detected_characters = utils.get_letters(nms_boxes, nms_classes, nms_scores, utils.get_characters())
+        
         # Append the detected characters to the list of all detected characters
         all_detected_characters.extend(detected_characters)
 

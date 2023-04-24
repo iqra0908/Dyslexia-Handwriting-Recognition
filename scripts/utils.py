@@ -63,17 +63,17 @@ def sliding_window(image, window_size, step_size, model):
 '''This function performs non-maximum suppression on a set of bounding boxes and 
 corresponding scores. It removes any boxes that overlap with a higher-scoring box 
 above a certain threshold and returns the remaining boxes and scores.'''
-def non_max_suppression(boxes, scores, threshold):
+def non_max_suppression(boxes, classes, scores, threshold):
     indices = tf.image.non_max_suppression(boxes, scores, max_output_size=boxes.shape[0], iou_threshold=threshold)
-    return [boxes[i] for i in indices], [scores[i] for i in indices]
+    return [boxes[i] for i in indices], [classes[i] for i in indices], [scores[i] for i in indices]
 
 '''This function draws bounding boxes and corresponding characters on an input image and 
 returns the resulting image. The boxes are colored green and labeled with the corresponding 
 character, which is selected based on the maximum score for each box.'''
-def display_detections(image, nms_boxes, nms_scores, characters):
+def display_detections(image, nms_boxes, nms_classes, nms_scores, characters):
     output_image = image.copy()
-    for (x, y, w, h), score in zip(nms_boxes, nms_scores):
-        letter = characters[int(score)-1]
+    for (x, y, w, h), predicted_class, score in zip(nms_boxes, nms_classes, nms_scores):
+        letter = characters[predicted_class-1]
         cv2.rectangle(output_image, (x, y), (x+w, y+h), (0, 0, 255), 2)
         cv2.putText(output_image, letter, (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 255, 0), 2, cv2.LINE_AA)
     return output_image
@@ -92,9 +92,9 @@ def get_characters():
     characters = uppercase_letters + lowercase_letters + digits
     return characters
 
-def get_letters(nms_boxes, nms_scores, characters):
+def get_letters(nms_boxes, nms_classes, nms_scores, characters):
     letters = []
-    for (x, y, w, h), score in zip(nms_boxes, nms_scores):
-        letter = characters[int(score)-1]
+    for (x, y, w, h), predicted_class, score in zip(nms_boxes, nms_classes, nms_scores):
+        letter = characters[predicted_class-1]
         letters.append(letter)
     return letters

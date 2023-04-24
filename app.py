@@ -20,6 +20,10 @@ image_file = st.sidebar.file_uploader(label="Upload an image of handwriting", ty
 # Create a list to store the bounding boxes
 bounding_boxes = []
 
+# Set the fixed size of the canvas
+CANVAS_WIDTH = 500
+CANVAS_HEIGHT = 500
+
 # If an image has been uploaded, perform handwriting recognition and display the results
 if image_file is not None:
     # Convert the uploaded file to a PIL Image
@@ -27,6 +31,17 @@ if image_file is not None:
 
     # Convert the PIL Image to an OpenCV image
     image_cv2 = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
+    
+    # Rescale the image to fit the canvas size while preserving the aspect ratio
+    image_ratio = image.width / image.height
+    if image_ratio > 1:
+        rescaled_width = int(CANVAS_WIDTH * image_ratio)
+        rescaled_height = CANVAS_HEIGHT
+    else:
+        rescaled_width = CANVAS_WIDTH
+        rescaled_height = int(CANVAS_HEIGHT / image_ratio)
+    image = image.resize((rescaled_width, rescaled_height))
+
 
     # Create a canvas for drawing the bounding box
     canvas_result = st_canvas(
