@@ -29,7 +29,7 @@ jobs:
       
       - name: Install dependencies
         run: |
-          pip install -y libgl1-mesa-glx
+          pip install libgl1-mesa-glx
           pip install -r requirements.txt
         
       # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
