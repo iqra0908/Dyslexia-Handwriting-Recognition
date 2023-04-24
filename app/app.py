@@ -2,27 +2,24 @@ import streamlit as st
 import cv2
 import numpy as np
 from PIL import Image
+import sys
+sys.path.append('../')
 from streamlit_drawable_canvas import st_canvas
 from scripts.bounding_box_detection import object_detection
 import pickle
 from tensorflow.keras.models import load_model
 
-resnet50_model = load_model('./models/resnet50_model.h5')
-resnet101_model = load_model('./models/resnet101_model.h5')
+dl_model = load_model('../models/lenet_model.h5')
 
 # Load the saved SVM model
-with open('./models/svm_model.pkl', 'rb') as file:
+with open('../models/svm_model.pkl', 'rb') as file:
     svm_model = pickle.load(file)
 
-# Function to perform handwriting recognition on an image using ResNet50
-def recognize_handwriting_resnet50(image):
-    return resnet50_model.predict(image)
+# Function to perform handwriting recognition on an image using DL Model
+def recognize_handwriting_dl(image):
+    return dl_model.predict(image)
 
-# Function to perform handwriting recognition on an image using ResNet101
-def recognize_handwriting_resnet101(image):
-    return resnet101_model.predict(image)
-
-# Function to perform handwriting recognition on an image using SVM
+# Function to perform handwriting recognition on an image using Non-DL model
 def recognize_handwriting_svm(image):
     #recognized_image = manual_detection(image)
     return svm_model.predict(image)
@@ -89,34 +86,16 @@ if image_file is not None:
 
     # Add buttons for different detection methods
     st.write("Choose a detection method:")
-    resnet50_button = st.button("ResNet50")
-    resnet101_button = st.button("ResNet101")
+    dl_button = st.button("dl")
     svm_button = st.button("SVM")
 
     # If a detection method button has been clicked, perform handwriting recognition and display the results
-    if resnet50_button:
+    if dl_button:
         # Crop the regions within the bounding boxes
         template_letters = [image_cv2[y:y+h, x:x+w] for x, y, w, h in bounding_boxes]
 
-        # Perform handwriting recognition on the cropped regions using ResNet50
-        recognized_image, detected_characters = object_detection(image_cv2, template_letters, resnet50_model)
-
-        # Display the uploaded image and the recognized image
-        col1, col2 = st.columns(2)
-        with col1:
-            st.image(image, caption='Uploaded image', use_column_width=True)
-        with col2:
-            st.image(recognized_image, caption='Recognized image', use_column_width=True)
-
-        # Display the detected text
-        st.write("Detected text: ", "".join(detected_characters))
-
-    elif resnet101_button:
-        # Crop the regions within the bounding boxes
-        template_letters = [image_cv2[y:y+h, x:x+w] for x, y, w, h in bounding_boxes]
-
-        # Perform handwriting recognition on the cropped regions using ResNet101
-        recognized_image, detected_characters = object_detection(image_cv2, template_letters, resnet101_model)
+        # Perform handwriting recognition on the cropped regions using dl
+        recognized_image, detected_characters = object_detection(image_cv2, template_letters, dl_model)
 
         # Display the uploaded image and the recognized image
         col1, col2 = st.columns(2)

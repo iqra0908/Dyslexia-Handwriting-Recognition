@@ -76,6 +76,14 @@ To reduce the computational requirements for training the model, we used data sa
 | ResNet101 | 30 | 2.1344 | 0.3318 | 2.15 | 0.3056 |
 | ResNet152 | 30 | 2.27 | 0.306 | 2.265 | 0.296 |
 
+## Streamlit app
+You can also run the handwriting recognition system using our Streamlit app. To run the app, make sure you have installed all the required packages including Streamlit. Then, run the following command:
+
+```bash
+streamlit run app.py
+```
+
+The app will launch in your browser. You can upload an image of handwriting using the file uploader in the sidebar. Once an image is uploaded, you can draw bounding boxes around letters in the image using the canvas tool. Then, you can choose a detection method (ResNet50, ResNet101, or SVM) and perform handwriting recognition on the selected letters. The recognized image and detected text will be displayed in the app.
 
 ## References
 The following papers are related to this dataset:
