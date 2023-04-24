@@ -2,7 +2,18 @@ import cv2
 import numpy as np
 from tensorflow.keras.models import load_model
 from bounding_box import BoundingBox
-from utils import load_image, preprocess_template_letter, sliding_window, non_max_suppression, display_detections
+import string
+from utils import load_image, preprocess_template_letter, sliding_window, non_max_suppression, display_detections, get_characters
+
+'''
+This function performs manual detection of handwritten letters in an image using a trained model. 
+It loads the trained model, reads the input image, and sets up a bounding box to select a 
+template letter from the input image. It then creates four trackbars to allow the user to 
+adjust the position and size of the bounding box. When the user selects a bounding box, 
+the function crops the template letter from the input image, preprocesses it, and performs 
+sliding window detection on the input image using the trained model. 
+It then performs non-maximum suppression to remove overlapping detections and displays the 
+final results in a separate window.'''
 
 def manual_detection():
     model = load_model('./models/resnet50_model.h5')
@@ -10,6 +21,9 @@ def manual_detection():
     image = load_image(image_path)
     template_box = BoundingBox()
 
+    # This function is called when a trackbar is moved by the user. It updates the 
+    # corresponding parameter of the bounding box based on the new value of the trackbar 
+    # and calls update_selected_image() to redraw the selected image.
     # Replace the on_x_trackbar, on_y_trackbar, on_w_trackbar, and on_h_trackbar functions
     # with a single function that takes a parameter to identify which trackbar it should update
     def on_trackbar(val, param):
@@ -23,6 +37,8 @@ def manual_detection():
             template_box.update(h=val)
         update_selected_image()
 
+    # This function updates the selected image window to show the current position and 
+    # size of the bounding box.
     def update_selected_image():
         selected_image = image.copy()
         x, y, w, h = template_box.to_list()
@@ -54,8 +70,8 @@ def manual_detection():
     else:
         nms_boxes, nms_scores = [], []
 
-    characters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
-    output_image = display_detections(image, nms_boxes, nms_scores, characters)
+    
+    output_image = display_detections(image, nms_boxes, nms_scores, get_characters())
     cv2.imshow("Detections", output_image)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
