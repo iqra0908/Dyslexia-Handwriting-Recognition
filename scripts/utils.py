@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 import tensorflow as tf
-from bounding_box import BoundingBox
+from scripts.bounding_box import BoundingBox
 import string
 
 def load_image(image_path):
@@ -75,7 +75,7 @@ def display_detections(image, nms_boxes, nms_scores, characters):
     for (x, y, w, h), score in zip(nms_boxes, nms_scores):
         letter = characters[int(score)-1]
         cv2.rectangle(output_image, (x, y), (x+w, y+h), (0, 0, 255), 2)
-        cv2.putText(output_image, letter, (x, y-5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
+        cv2.putText(output_image, letter, (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 255, 0), 2, cv2.LINE_AA)
     return output_image
 
 # This function generate a list characters containing all uppercase and lowercase letters 
@@ -91,3 +91,10 @@ def get_characters():
     # Combine the lists to create a list of all characters
     characters = uppercase_letters + lowercase_letters + digits
     return characters
+
+def get_letters(nms_boxes, nms_scores, characters):
+    letters = []
+    for (x, y, w, h), score in zip(nms_boxes, nms_scores):
+        letter = characters[int(score)-1]
+        letters.append(letter)
+    return letters

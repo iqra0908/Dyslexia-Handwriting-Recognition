@@ -1,9 +1,8 @@
 import cv2
 import numpy as np
 from tensorflow.keras.models import load_model
-from bounding_box import BoundingBox
-import string
-from utils import load_image, preprocess_template_letter, sliding_window, non_max_suppression, display_detections, get_characters
+from scripts.bounding_box import BoundingBox
+from scripts.utils import load_image, preprocess_template_letter, sliding_window, non_max_suppression, display_detections, get_characters
 
 '''
 This function performs manual detection of handwritten letters in an image using a trained model. 
@@ -15,10 +14,8 @@ sliding window detection on the input image using the trained model.
 It then performs non-maximum suppression to remove overlapping detections and displays the 
 final results in a separate window.'''
 
-def manual_detection():
+def manual_detection(image):
     model = load_model('./models/resnet50_model.h5')
-    image_path = './data/11_year_old_boy_first_week_at_oak_hill.png'
-    image = load_image(image_path)
     template_box = BoundingBox()
 
     # This function is called when a trackbar is moved by the user. It updates the 
@@ -72,9 +69,15 @@ def manual_detection():
 
     
     output_image = display_detections(image, nms_boxes, nms_scores, get_characters())
-    cv2.imshow("Detections", output_image)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    #cv2.imshow("Detections", output_image)
+    #cv2.waitKey(0)
+    #cv2.destroyAllWindows()
+    
+    # Return the output image instead of displaying it
+    return output_image
 
 if __name__ == "__main__":
+    image_path = './data/11_year_old_boy_first_week_at_oak_hill.png'
+    image = load_image(image_path)
+    manual_detection(image)
     manual_detection()
