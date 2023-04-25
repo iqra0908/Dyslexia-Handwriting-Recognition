@@ -17,12 +17,13 @@ final results in a separate window.'''
 def object_detection(image, template_letters, model):
     
     all_detected_characters = []
+    image = utils.preprocess_image(image)
 
     for template_letter in template_letters:
         # Preprocess the template letter and perform sliding window detection
         template_letter = utils.preprocess_template_letter(template_letter)
         window_size = template_letter.shape[0]
-        step_size = int(window_size / 2)
+        step_size = int(window_size / 4)
         detections = utils.sliding_window(image, window_size, step_size, model)
 
         if len(detections) > 0:

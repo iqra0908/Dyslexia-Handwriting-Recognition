@@ -9,10 +9,10 @@ from scripts.bounding_box_detection import object_detection
 import pickle
 from tensorflow.keras.models import load_model
 
-dl_model = load_model('../models/lenet_model.h5')
+dl_model = load_model('./models/LeNet-5_model.h5')
 
 # Load the saved SVM model
-with open('../models/svm_model.pkl', 'rb') as file:
+with open('./models/svm_model.pkl', 'rb') as file:
     svm_model = pickle.load(file)
 
 # Function to perform handwriting recognition on an image using DL Model
@@ -40,6 +40,9 @@ CANVAS_HEIGHT = 500
 
 # If an image has been uploaded, perform handwriting recognition and display the results
 if image_file is not None:
+    # Clear the bounding_boxes list
+    bounding_boxes = []
+        
     # Convert the uploaded file to a PIL Image
     image = Image.open(image_file)
 

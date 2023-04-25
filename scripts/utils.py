@@ -20,6 +20,12 @@ def load_image(image_path):
     image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
     return image
 
+def preprocess_image(image):
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    image = cv2.bitwise_not(image)
+    image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
+    return image
+
 def preprocess_template_letter(template_letter):
     """
     Preprocesses the given template letter image by converting it to grayscale and performing thresholding.
@@ -87,7 +93,7 @@ def display_detections(image, nms_boxes, nms_classes, nms_scores, characters):
 # This function generate a list characters containing all uppercase and lowercase letters 
 # as well as digits.
 def get_characters():
-    # Generate a list of uppercase and lowercase letters
+    '''# Generate a list of uppercase and lowercase letters
     uppercase_letters = list(string.ascii_uppercase)
     lowercase_letters = list(string.ascii_lowercase)
 
@@ -95,12 +101,16 @@ def get_characters():
     digits = list(string.digits)
 
     # Combine the lists to create a list of all characters
-    characters = uppercase_letters + lowercase_letters + digits
+    characters = uppercase_letters + lowercase_letters + digits'''
+    characters = ['1', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K','L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'b', 'c', 'd','e', 'f', 'g', 'j', 'k', 'l', 'n', 'p', 'q', 'r', 's', 'z']
     return characters
 
 def get_letters(nms_boxes, nms_classes, nms_scores, characters):
     letters = []
+    classes = []
     for (x, y, w, h), predicted_class, score in zip(nms_boxes, nms_classes, nms_scores):
         letter = characters[predicted_class-1]
         letters.append(letter)
+        classes.append(predicted_class)
+    print(letters,classes)
     return letters

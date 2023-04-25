@@ -75,6 +75,8 @@ To reduce the computational requirements for training the model, we used data sa
 | ResNet50 | 100 | 2.5033 | 0.2851 | 2.4646 | 0.2912 |
 | ResNet101 | 30 | 2.1344 | 0.3318 | 2.15 | 0.3056 |
 | ResNet152 | 30 | 2.27 | 0.306 | 2.265 | 0.296 |
+| LeNet-5 | 30 | 1.400 | 0.4711 | 1.349 | 0.493 |
+| AlexNet | 30 | 3.875 | 0.01 | 3.87 | 0.0208 |
 
 ## Streamlit app
 You can also run the handwriting recognition system using our Streamlit app. To run the app, make sure you have installed all the required packages including Streamlit. Then, run the following command:
