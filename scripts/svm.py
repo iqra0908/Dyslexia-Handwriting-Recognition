@@ -7,6 +7,8 @@ import zipfile
 from sklearn.preprocessing import LabelEncoder
 from collections import defaultdict
 import pickle
+from sklearn.model_selection import KFold
+from sklearn.metrics import accuracy_score
 
 # This function takes a byte string representing an image, preprocesses it (resize and convert to RGB),
 # and returns a normalized numpy array.
@@ -49,40 +51,35 @@ def load_images_labels(zip_file, subfolders, num_samples=10):
 # and evaluates the model.
 def main():
     zip_file = './data/Gambo.zip'
-    train_subfolders = ['Train/Normal', 'Train/Reversal']
-    test_subfolders = ['Test/Normal', 'Test/Reversal']
-    train_images, train_labels = load_images_labels(zip_file, train_subfolders, num_samples=10)
-    test_images, test_labels = load_images_labels(zip_file, test_subfolders, num_samples=2)
-
-    train_images, val_images, train_labels, val_labels = train_test_split(train_images, train_labels, test_size=0.2, random_state=42)
+    subfolders = ['Train/Normal', 'Train/Reversal']
+    images, labels = load_images_labels(zip_file, subfolders, num_samples=50)
 
     le = LabelEncoder()
-    train_labels = le.fit_transform(train_labels)
-    val_labels = le.transform(val_labels)
-    test_labels = le.transform(test_labels)
+    labels = le.fit_transform(labels)
 
-    unique_labels = np.unique(train_labels)
+    unique_labels = np.unique(labels)
 
     # Flatten the images to 1D arrays
-    train_images = train_images.reshape(train_images.shape[0], -1)
-    val_images = val_images.reshape(val_images.shape[0], -1)
-    test_images = test_images.reshape(test_images.shape[0], -1)
+    images = images.reshape(images.shape[0], -1)
+
+    # Split data into training and testing sets
+    train_images, test_images, train_labels, test_labels = train_test_split(images, labels, test_size=0.2, random_state=42)
 
     # Train the SVM model
-    svm_model = SVC(kernel='linear', C=1, gamma='auto')
+    svm_model = SVC(kernel='linear', C=1, gamma='auto', probability=True)  # Add probability=True
     svm_model.fit(train_images, train_labels)
-    
-    # Evaluate the model on the validation set
-    val_preds = svm_model.predict(val_images)
-    val_acc = accuracy_score(val_labels, val_preds)
-    print(f"Validation accuracy: {val_acc}")
-    
-    y_pred = svm_model.predict(test_images)
-    acc = accuracy_score(test_labels, y_pred)
-    print(f"Test accuracy: {acc}")
-    
-    # Save SVM model using pickle
-    with open('./models/svm_model.pkl', 'wb') as f:
+
+    # Evaluate the model on the test set
+    test_preds = svm_model.predict(test_images)
+    test_acc = accuracy_score(test_labels, test_preds)
+
+    # Print the test accuracy
+    print(f"Test accuracy: {test_acc}")
+
+    # Save the best SVM model using pickle
+    with open('./app/models/svm_model.pkl', 'wb') as f:
         pickle.dump(svm_model, f)
+
 if __name__ == '__main__':
     main()
+

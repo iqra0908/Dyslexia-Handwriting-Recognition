@@ -77,6 +77,7 @@ To reduce the computational requirements for training the model, we used data sa
 | ResNet152 | 30 | 2.27 | 0.306 | 2.265 | 0.296 |
 | LeNet-5 | 30 | 1.400 | 0.4711 | 1.349 | 0.493 |
 | AlexNet | 30 | 3.875 | 0.01 | 3.87 | 0.0208 |
+| LeNet-5-modified | 30 | 1.306 | 0.5135 | 1.0726 | 0.5812 |
 
 SVM Model:
 Test accuracy: 0.93125
