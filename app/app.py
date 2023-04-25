@@ -10,8 +10,12 @@ import pickle
 from tensorflow.keras.models import load_model
 import os
 
+#model_path = "./models/LeNet-5_model.h5"
+#nondl_model_path = "./models/svm_model.pkl"
+
 model_path = os.environ.get("DL_MODEL_PATH")
 nondl_model_path = os.environ.get("Non_DL_MODEL_PATH")
+
 dl_model = load_model(model_path)
 
 # Load the saved SVM model

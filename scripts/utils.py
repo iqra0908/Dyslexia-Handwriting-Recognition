@@ -3,8 +3,15 @@ import numpy as np
 import tensorflow as tf
 from scripts.bounding_box import BoundingBox
 from sklearn.svm import SVC
-import string
+import pickle
+import os
 
+encoder_path = os.environ.get("LABEL_ENCODER_PATH")
+#encoder_path = '/Users/iqraimtiaz/Documents/duke/Courses/540-DL/Dyslexia-Handwriting-Recognition/scripts/label_encoder.pkl'
+
+with open(encoder_path, 'rb') as f:
+    le = pickle.load(f)
+        
 def load_image(image_path):
     """
     Loads an image from a given path and returns it in RGB format.
@@ -68,8 +75,13 @@ def sliding_window(image, window_size, step_size, model):
                 
             predicted_class = np.argmax(prediction)
 
-            if predicted_class != 0 and prediction[predicted_class] > 0.1:
-                detections.append((x, y, window_size, window_size, predicted_class, prediction[predicted_class]))
+            if isinstance(model, SVC):  # If the model is an SVM model
+                if predicted_class != 0:
+                    detections.append((x, y, window_size, window_size, predicted_class, prediction[predicted_class]))
+            else:
+                if predicted_class != 0 and prediction[predicted_class] > 0.5:
+                    detections.append((x, y, window_size, window_size, predicted_class, prediction[predicted_class]))
+        
     return detections
 
 '''This function performs non-maximum suppression on a set of bounding boxes and 
@@ -84,8 +96,9 @@ returns the resulting image. The boxes are colored green and labeled with the co
 character, which is selected based on the maximum score for each box.'''
 def display_detections(image, nms_boxes, nms_classes, nms_scores, characters):
     output_image = image.copy()
+    
     for (x, y, w, h), predicted_class, score in zip(nms_boxes, nms_classes, nms_scores):
-        letter = characters[predicted_class-1]
+        letter = str(le.inverse_transform([predicted_class])[0])
         cv2.rectangle(output_image, (x, y), (x+w, y+h), (0, 0, 255), 2)
         cv2.putText(output_image, letter, (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 255, 0), 2, cv2.LINE_AA)
     return output_image
@@ -93,6 +106,7 @@ def display_detections(image, nms_boxes, nms_classes, nms_scores, characters):
 # This function generate a list characters containing all uppercase and lowercase letters 
 # as well as digits.
 def get_characters():
+    
     '''# Generate a list of uppercase and lowercase letters
     uppercase_letters = list(string.ascii_uppercase)
     lowercase_letters = list(string.ascii_lowercase)
@@ -109,7 +123,7 @@ def get_letters(nms_boxes, nms_classes, nms_scores, characters):
     letters = []
     classes = []
     for (x, y, w, h), predicted_class, score in zip(nms_boxes, nms_classes, nms_scores):
-        letter = characters[predicted_class-1]
+        letter = str(le.inverse_transform([predicted_class])[0])
         letters.append(letter)
         classes.append(predicted_class)
     print(letters,classes)
