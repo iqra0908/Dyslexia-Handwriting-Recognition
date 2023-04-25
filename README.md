@@ -78,6 +78,9 @@ To reduce the computational requirements for training the model, we used data sa
 | LeNet-5 | 30 | 1.400 | 0.4711 | 1.349 | 0.493 |
 | AlexNet | 30 | 3.875 | 0.01 | 3.87 | 0.0208 |
 
+SVM Model:
+Test accuracy: 0.93125
+
 ## Streamlit app
 You can also run the handwriting recognition system using our Streamlit app. To run the app, make sure you have installed all the required packages including Streamlit. Then, run the following command:
 
