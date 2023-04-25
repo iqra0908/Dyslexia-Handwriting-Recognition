@@ -8,11 +8,14 @@ from streamlit_drawable_canvas import st_canvas
 from scripts.bounding_box_detection import object_detection
 import pickle
 from tensorflow.keras.models import load_model
+import os
 
-dl_model = load_model('./models/LeNet-5_model.h5')
+model_path = os.environ.get("DL_MODEL_PATH")
+nondl_model_path = os.environ.get("Non_DL_MODEL_PATH")
+dl_model = load_model(model_path)
 
 # Load the saved SVM model
-with open('./models/svm_model.pkl', 'rb') as file:
+with open(nondl_model_path, 'rb') as file:
     svm_model = pickle.load(file)
 
 # Function to perform handwriting recognition on an image using DL Model
