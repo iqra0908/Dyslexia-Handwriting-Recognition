@@ -6,8 +6,8 @@ from sklearn.svm import SVC
 import pickle
 import os
 
-encoder_path = os.environ.get("LABEL_ENCODER_PATH")
-#encoder_path = '/Users/iqraimtiaz/Documents/duke/Courses/540-DL/Dyslexia-Handwriting-Recognition/scripts/label_encoder.pkl'
+#encoder_path = os.environ.get("LABEL_ENCODER_PATH")
+encoder_path = '/Users/iqraimtiaz/Documents/duke/Courses/540-DL/Dyslexia-Handwriting-Recognition/app/label_encoder.pkl'
 
 with open(encoder_path, 'rb') as f:
     le = pickle.load(f)
@@ -68,8 +68,10 @@ def sliding_window(image, window_size, step_size, model):
             resized_patch = cv2.resize(patch, (128, 128), interpolation=cv2.INTER_AREA).astype('float32')
             resized_patch = resized_patch / 255.0
             if isinstance(model, SVC):  # If the model is an SVM model
-                flattened_patch = resized_patch.reshape(1, -1)
-                prediction = model.predict(flattened_patch)[0]
+                # flattened_patch = resized_patch.reshape(1, -1)
+                # prediction = model.predict(flattened_patch)[0]
+                resized_patch = resized_patch.reshape(-1, 128*128*3)
+                prediction = model.decision_function(resized_patch)[0]
             else:
                 prediction = model.predict(resized_patch[np.newaxis, ...])[0]
                 
@@ -83,6 +85,8 @@ def sliding_window(image, window_size, step_size, model):
                     detections.append((x, y, window_size, window_size, predicted_class, prediction[predicted_class]))
         
     return detections
+
+
 
 '''This function performs non-maximum suppression on a set of bounding boxes and 
 corresponding scores. It removes any boxes that overlap with a higher-scoring box 

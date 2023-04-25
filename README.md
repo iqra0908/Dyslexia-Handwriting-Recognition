@@ -5,8 +5,6 @@ This project aims to create a handwriting recognition system for people with dys
 ## Prerequisites
 To run the project, you need to have the following installed:
 
-To run the project, you need to have the following installed:
-
 - Python 3.7.15
 - keras==2.11.0
 - matplotlib==3.5.3
@@ -93,7 +91,7 @@ The app will launch in your browser. You can upload an image of handwriting usin
 
 ## Deployed Azure App
 
-This project is deployed to an Azure App Service instance. To access the app, navigate to the following URL: `https://dyslexia-handwriting-recognition.azurewebsites.net/`.
+This project is deployed to an Azure App Service instance. To access the app, navigate to the following URL: https://dyslexia-handwriting-recognition.azurewebsites.net/
 
 The app is hosted in a Docker container, which is built from the Dockerfile included in the project. The Dockerfile specifies the base image as Python 3.7-slim, installs the required Python dependencies, and sets the command to start the Streamlit app on port 8000.
 
