@@ -40,7 +40,7 @@ python manual_bounding_box_detection.py
 ## Description of the code
 The script contains the following steps:
 
-1. Loading the pre-trained letter recognition model (ResNet50 or EfficientNetB0).
+1. Loading the pre-trained CNN letter recognition model.
 2. Loading the worksheet image and converting it to grayscale.
 3. Initializing the template box and letter.
 4. Creating trackbars for selecting the template box.
@@ -91,11 +91,36 @@ streamlit run app.py
 
 The app will launch in your browser. You can upload an image of handwriting using the file uploader in the sidebar. Once an image is uploaded, you can draw bounding boxes around letters in the image using the canvas tool. Then, you can choose a detection method (ResNet50, ResNet101, or SVM) and perform handwriting recognition on the selected letters. The recognized image and detected text will be displayed in the app.
 
+## Deployed Azure App
+
+This project is deployed to an Azure App Service instance. To access the app, navigate to the following URL: `https://dyslexia-handwriting-recognition.azurewebsites.net/`.
+
+The app is hosted in a Docker container, which is built from the Dockerfile included in the project. The Dockerfile specifies the base image as Python 3.7-slim, installs the required Python dependencies, and sets the command to start the Streamlit app on port 8000.
+
+The `host.json` file is used to configure the Azure Functions extension bundle, which provides additional functionality to the app. Specifically, the `logging` section is used to enable Application Insights sampling and exclude request logging, while the `extensionBundle` section specifies the version of the Functions extension bundle to use.
+
+If you would like to deploy the app yourself, you can follow these steps:
+
+1. Create an Azure App Service instance and configure the required settings, such as the resource group, app name, and region.
+2. Enable continuous deployment by connecting your app to a source control repository, such as GitHub or Azure Repos.
+3. Create a deployment slot to test changes before deploying them to the production slot.
+4. Configure the deployment slot settings, such as the environment variables and app settings.
+5. Deploy the app by pushing changes to the source control repository.
+
+For more detailed instructions on deploying a Docker container to Azure App Service, please refer to the Azure documentation [1].
+
 ## References
 The following papers are related to this dataset:
-1. P. J. Grother, “NIST Special Database 19,” NIST, 2016. [Online]. Available: https://www.nist.gov/srd/nist-special-database-19. [Accessed: 22-May-2019].
-2. S. Patel, “A-Z Handwritten Alphabets in .csv format,” Kaggle, 2017. [Online]. Available: https://www.kaggle.com/sachinpatel21/az-handwritten-alphabets-in-csv-format. [Accessed: 22-May-2019].
-3. Rosli, M. S. A. B., Isa, I. S., Ramlan, S. A., Sulaiman, S. N., & Maruzuki, M. I. F. (2021). Development of CNN Transfer Learning for Dyslexia Handwriting Recognition. 2021 11th IEEE International Conference on Control System, Computing and Engineering (ICCSCE), 194-199. doi: 10.1109/ICCSCE52189.2021.9530971.
-4. Seman, N. S. L., Isa, I. S., Ramlan, S. A., Li-Chih, W., & Maruzuki, M. I. F. (2021). Notice of Removal: Classification of Handwriting Impairment Using CNN for Potential Dyslexia Symptom. 2021 11th IEEE International Conference on Control System, Computing and Engineering (ICCSCE), 188-193. doi: 10.1109/ICCSCE52189.2021.9530989.
-5. Isa, I. S., Sazanita, I., Rahimi, W. N. S., Ramlan, S. A., Sulaiman, S. N., & Mohamad, F. A. (2021). CNN Comparisons Models On Dyslexia Handwriting Classification. Universiti Teknologi MARA Cawangan Pulau Pinang.
-6. Isa, I. S., Rahimi, W. N. S., Ramlan, S. A., & Sulaiman, S. N. (2019). Automated detection of dyslexia symptom based on handwriting image for primary school children. Procedia Computer Science, 163, 440-449. doi: 10.1016/j.procs.2019.12.202.
+[1] P. J. Grother, “NIST Special Database 19,” NIST, 2016. [Online]. Available: https://www.nist.gov/srd/nist-special-database-19. [Accessed: 22-May-2019].
+
+[2] S. Patel, “A-Z Handwritten Alphabets in .csv format,” Kaggle, 2017. [Online]. Available: https://www.kaggle.com/sachinpatel21/az-handwritten-alphabets-in-csv-format. [Accessed: 22-May-2019].
+
+[3] Rosli, M. S. A. B., Isa, I. S., Ramlan, S. A., Sulaiman, S. N., & Maruzuki, M. I. F. (2021). Development of CNN Transfer Learning for Dyslexia Handwriting Recognition. 2021 11th IEEE International Conference on Control System, Computing and Engineering (ICCSCE), 194-199. doi: 10.1109/ICCSCE52189.2021.9530971.
+
+[4] Seman, N. S. L., Isa, I. S., Ramlan, S. A., Li-Chih, W., & Maruzuki, M. I. F. (2021). Notice of Removal: Classification of Handwriting Impairment Using CNN for Potential Dyslexia Symptom. 2021 11th IEEE International Conference on Control System, Computing and Engineering (ICCSCE), 188-193. doi: 10.1109/ICCSCE52189.2021.9530989.
+
+[5] Isa, I. S., Sazanita, I., Rahimi, W. N. S., Ramlan, S. A., Sulaiman, S. N., & Mohamad, F. A. (2021). CNN Comparisons Models On Dyslexia Handwriting Classification. Universiti Teknologi MARA Cawangan Pulau Pinang.
+
+[6] Isa, I. S., Rahimi, W. N. S., Ramlan, S. A., & Sulaiman, S. N. (2019). Automated detection of dyslexia symptom based on handwriting image for primary school children. Procedia Computer Science, 163, 440-449. doi: 10.1016/j.procs.2019.12.202.
+
+[7] "Deploy a container to Azure App Service", Microsoft Azure documentation. [Online]. Available: https://docs.microsoft.com/en-us/azure/app-service/deploy-container-to-app-service. [Accessed: 25-Apr-2023].
